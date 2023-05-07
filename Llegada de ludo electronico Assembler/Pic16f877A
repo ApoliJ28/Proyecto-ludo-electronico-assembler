@@ -1,0 +1,105 @@
+;***********************************LledadaDeLudo.asm ***********************************
+;
+;							PROYECTO
+;
+; 			Nombre: Victor Apolinares EXP:2017203056 Tlf:04143183016
+;								
+;						     
+;
+;                          Abril 2021
+;
+; LledadaDeLudo)Hacer un juego tipo ludo el parte de llegada de dos jugadores, el jugador lanza un dado y sale un numero aleatorio del 1 al 6.
+; Si el jugador esta en la casilla numero 4 y saca un 6 asi contando como el ludo quedara en la casiila 2, hasta que el jugador no
+; en la casilla 6 no termina el juego y para volver a jugar debe a ver un boton de reset, para jugar dos botenes el del jugador 1 
+; y el jugador 2. Y mostrar por un 7 segmento el numero aleatorio que saca los jugadores (DADO).
+; 
+;				
+;
+; ZONA DE DATOS *********************************************************************
+
+	LIST	   P=16F877A			; Procesador utilizado.
+	INCLUDE  <P16F877A.INC>		; Incluyendo la libreria del PIC.
+	__CONFIG   _CP_OFF &  _WDT_OFF & _PWRTE_ON & _XT_OSC ; Configuracion de ciertos fragmentos del PIC.
+
+	CBLOCK 0x0C					; En esta posición empieza la RAM de usuario.
+	Contador					; Cotador necesario para hacer el numero aleatorio.
+	Numero						; Guardamos el espacio de memoria para el numero aleatorio.
+	Casillas					; Indica el numero de casilla que va.
+	ENDC
+	
+	#DEFINE	Pulsador1	PORTE,0 ; Pulsador para que juege el jugador 1.
+	#DEFINE	Pulsador2	PORTE,1 ; Pulsador para que juege el jugador 2.
+	#DEFINE	Display		PORTD	; Toda la linea del puerto D para al display 7segmentos.
+
+; ZONA DE CÓDIGOS *******************************************************************
+
+	ORG 	0					; El programa comienza en la dirección 0.
+Inicio 							; Inicio del programa.
+	bcf		STATUS,RP1			
+	bsf		STATUS,RP0			; Acceso al banco 1.
+	clrf	TRISB				; Configuramos las lineas del puerto B como salida.
+	clrf	TRISC				; Configuramos las lineas del puerto C como salida.				
+	clrf	TRISD				; Configuramos las lineas del puerto D como salida.
+	movlw	b'00000111'			; Movemos el dato literal a W para configurar el puerto E.
+	movwf	TRISE				; Configuramos las lineas del puerto E cmomo entrada.
+	bcf		STATUS,RP0			; Acceso al banco 0.
+	clrf	TRISB				
+	clrf	TRISC
+	clrf	TRISD				; Limpia los puertos.
+Principal						; Etiqueta Principal del programa
+	call	InicializaContador	; Inicializa el dado electronico.
+EsperaJugador1					; Espera que el jugador uno lanze el dado y el jugador dos espera su turno.
+	btfss	Pulsador1			; ¿Presiono el boton el jugador uno?
+	goto	Juega1				; Si, Lanza el dado el jugador 1.
+	goto	EsperaJugador1		; No, Espera a que juegue.
+EsperaJugador2					; Espera que el jugador dos lanze el dado y el jugador uno espera su turno.
+	btfsc	Pulsador2			; ¿Presiono el boton el jugador dos?
+	goto	Juega2				; Si, Lanza el dado el jugador 2.
+	goto	EsperaJugador2		; No, Espera a que juegue.
+;
+; Etiqueta "Juega1 y Juega2"-------------------------------------------------------------------------
+; Mientras que el jugador 1 o el jugador 2 mantenga el pulsador presionado se genera un numero "Aleatorio"
+; en la subrutina "DadoElectronico".
+;
+Juega1
+	call	DadoElectronico		; Genera el numero aleatorio.
+	goto	EsperaJugador1		; Le sede el turno al jugador 2.
+Juega2
+	call	DadoElectronico		; Genera el numero aleatorio.
+	goto	EsperaJugador1		; Le sede el turno al jugador 1.
+
+	
+;
+;Subrutina "DadoElectronico"-----------------------------------------------------------------
+;
+DadoElectronico					;  Mientras se mantenga pulsado se quedara en esta subrutina.
+	btfsc 	Pulsador1			; ¿Pulsador presionado? ¿(Pulsador)=0?
+	goto 	Fin					; No, sale de la subrutina.
+	call 	Retardo_50micros	; Hacemos un retardo de 50 microsegundos.
+	btfsc	Pulsador1			; Comprueba si es un rebote.
+	goto 	Fin					; Era un rebote y sale fuera.
+	call 	IncrementaVisualiza	; Incrementa el contador y lo visualiza.
+DejoPulsar
+	btfss 	Pulsador1			; ¿Dejo de pulsar? ¿(Pulsador)=1?
+	goto	DadoElectronico		; No, Sigue el generando un numero el dado.
+Fin
+	return						; Retorna de la subrutina.
+IncrementaVisualiza				; Subrutina para incrementar y visualizar en el display.
+	incf 	Contador,F			; Incrementa el contador en uno.
+	movlw	d'7'				; Movemos el dato literal para restar con el contador.
+	subwf	Contador,W			; Operación artimetica, W=Contador-W
+	btfss	STATUS,C			; ¿(Contador)<7?
+	goto	Visualiza			; Contador<7 visualiza normal
+InicializaContador				; Subrutina para incializar el contador, Dejarlo en cero.
+	movlw	0x01				; Mueve el valor 1 al contador.
+	movwf 	Contador			; No, Era igual o Mayor. Por tanto,resetea.		
+Visualiza						; Subrutina para Visualizar el contador en el Display.
+	movf Contador,W				; Mueve el valor del contador al registro W.
+	call Numero_a_7Segmentos	; Pasa el numero a 7Segmentos para poder verlo.
+	movwf Display				; Mueve el dato al Display para poder visualizar.
+	return						; Retornamos de la subrutina.
+;Fin de la subrutina ----------------------------------------------------------------------------
+
+	INCLUDE <DISPLAY_7S.INC>	; Incluimos la libreria del Display 7Segmentos.
+	INCLUDE <RETARDOS.INC>		; Incluyendo la libreria para hacer retardos.
+	END							; Fin del programa.

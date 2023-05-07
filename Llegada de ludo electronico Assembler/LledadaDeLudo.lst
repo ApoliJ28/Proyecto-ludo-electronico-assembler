@@ -1,0 +1,1153 @@
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;***********************************LledadaDeLudo.asm ***********************************
+                      00002 ;
+                      00003 ;                                                       PROYECTO
+                      00004 ;
+                      00005 ;                       Nombre: Victor Apolinares EXP:2017203056 Tlf:04143183016
+                      00006 ;                                                               
+                      00007 ;                                                    
+                      00008 ;
+                      00009 ;                          Abril 2021
+                      00010 ;
+                      00011 ; LledadaDeLudo)Hacer un juego tipo ludo el parte de llegada de dos jugadores, el jugador lanza un dado 
+                            y sale un numero aleatorio del 1 al 6.
+                      00012 ; Si el jugador esta en la casilla numero 4 y saca un 6 asi contando como el ludo quedara en la casiila 
+                            2, hasta que el jugador no
+                      00013 ; en la casilla 6 no termina el juego y para volver a jugar debe a ver un boton de reset, para jugar dos
+                             botenes el del jugador 1 
+                      00014 ; y el jugador 2. Y mostrar por un 7 segmento el numero aleatorio que saca los jugadores (DADO).
+                      00015 ; 
+                      00016 ;                               
+                      00017 ;
+                      00018 ; ZONA DE DATOS *********************************************************************
+                      00019 
+                      00020         LIST       P=16F877A                    ; Procesador utilizado.
+                      00021         INCLUDE  <P16F877A.INC>         ; Incluyendo la libreria del PIC.
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00566         LIST
+2007   3FF1           00022         __CONFIG   _CP_OFF &  _WDT_OFF & _PWRTE_ON & _XT_OSC ; Configuracion de ciertos fragmentos del P
+                            IC.
+                      00023 
+                      00024         CBLOCK 0x20                                     ; En esta posición empieza la RAM de usuario.
+  00000020            00025         Contador                                        ; Cotador necesario para hacer el numero aleator
+                            io.
+  00000021            00026         Jugador1_Casillas                       ; Indica el numero de casilla que va el jugador 1.
+  00000022            00027         Jugador2_Casillas                       ; Indica el numero de casilla que va el jugador 2.
+  00000023            00028         Numero_Turno                            ; Guarda el numero cuando lanza el dado para determinar 
+                            quien comienza jugando.
+                      00029         ENDC
+                      00030         
+                      00031         #DEFINE Pulsador1               PORTB,RB7 ; Pulsador para que juege el jugador 1.
+                      00032         #DEFINE Pulsador2               PORTC,RC7 ; Pulsador para que juege el jugador 2.
+                      00033         #DEFINE F_GanaJugador1  PORTB,RB6 ; Bandera que indica que gana el jugador 1.
+                      00034         #DEFINE F_GanaJugador2  PORTC,RC6 ; Bandera que indica que gana el jugador 2.
+                      00035         #DEFINE Display                 PORTD     ; Toda la linea del puerto D para al display 7segmento
+                            s.
+                      00036                 
+Warning[207]: Found label after column 1. (Casilla_MAX)
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000006            00037         Casilla_MAX             EQU     .6                    ; Casilla máxima del juego de ludo.
+                      00038 
+                      00039 ; ZONA DE CÓDIGOS *******************************************************************
+                      00040 
+0000                  00041         ORG     0                                       ; El programa comienza en la dirección 0.
+0000                  00042 Inicio                                                  ; Inicio del programa.
+0000   1303           00043         bcf             STATUS,RP1                      
+0001   1683           00044         bsf             STATUS,RP0                      ; Acceso al banco 1.
+0002   3080           00045         movlw   b'10000000'                     ; Configura RB7 como entrada y las demas como salida.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0003   0086           00046         movwf   TRISB                           ; Configuramos las lineas del puerto B.
+0004   3080           00047         movlw   b'10000000'                     ; Configura RC7 como entrada y las demas como salida.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0005   0087           00048         movwf   TRISC                           ; Configuramos las lineas del puerto C.                 
+                                    
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0006   0188           00049         clrf    TRISD                           ; Configuramos las lineas del puerto D como salida.
+0007   1283           00050         bcf             STATUS,RP0                      ; Acceso al banco 0.
+0008   0186           00051         clrf    PORTB                           
+0009   0187           00052         clrf    PORTC                           
+000A   0188           00053         clrf    PORTD                           ; Limpia los puertos.
+000B                  00054 Principal                                               ; Etiqueta Principal del programa       
+000B   01A1           00055         clrf    Jugador1_Casillas       
+000C   01A2           00056         clrf    Jugador2_Casillas       ; Comienzan en la casilla 1.
+000D   3001           00057         movlw   0x01                            ; Movemos el dato literal para configurar la salida de l
+                            os puertos.
+000E   0086           00058         movwf   PORTB                           
+000F   0087           00059         movwf   PORTC                           ; Los dos jugadores comienza en la casilla 1.
+0010   207C           00060         call    InicializaContador      ; Inicializa el dado electronico.
+                      00061 ;
+                      00062 ;Subrutina"Determina_Turno"-------------------------------------------------------------------
+                      00063 ;
+                      00064 ; Esta subrutina indica cual jugador comenzara jugando primero, compara  el que saco el numero mayor
+                      00065 ; el que saca el numero mayor comienza jugando y si los dos por casualida sacan el mismo numero
+                      00066 ; se vuelve a ejectutar la misma subrutina hasta que un jugar saque un numero mas alto que el otro.
+                      00067 ;
+0011                  00068 Determina_Turno
+0011   01A3           00069         clrf    Numero_Turno            ; Borramos lo que tenga el registro.
+0012                  00070 Espera_LanzaTurno1
+0012   1B86           00071         btfsc   Pulsador1                       ; ¿Presiono el boton el jugador uno?
+0013   2812           00072         goto    Espera_LanzaTurno1      ; No, Por lo tanto espere que presione.
+0014   2065           00073         call    Dado1                           ; Si, Por lo tanto el jugador uno lanzo el dado.
+0015   0820           00074         movf    Contador,W                      ; Mueve el dato del contador a W.
+0016   00A3           00075         movwf   Numero_Turno            ; Guarda el numero que saco lanzando el dado con el jugador 1,
+0017                  00076 Espera_LanzaTurno2
+0017   1B87           00077         btfsc   Pulsador2                       ; ¿Presiono el boton el jugador dos?
+0018   2817           00078         goto    Espera_LanzaTurno2      ; No, Por lo tanto espere que presione.
+0019   206E           00079         call    Dado2                           ; Si, Por lo tanto el jugador dos lanzo el dado.
+001A   0823           00080         movf    Numero_Turno,W          ; Recupera el valor del numero que saco el jugador uno lanzando 
+                            el dado.
+001B   0220           00081         subwf   Contador,W                      ; Restamos para ver que jugador lanzo el numero mas alto
+                            .
+001C   1C03           00082         btfss   STATUS,C                        ; ¿El jugador 1 saco un numero mas alto?
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001D   2821           00083         goto    EsperaJugador1          ; Si, por lo tanto comienza jugando.
+001E   1D03           00084         btfss   STATUS,Z                        ; ¿El jugador 2 saco un numero mas alto?
+001F   2824           00085         goto    EsperaJugador2          ; Si, Por lo tanto comienza jugando.
+0020   2811           00086         goto    Determina_Turno  ; No, Los dos sacaron el mismo numero por lo tanto se vuelve a hacer el
+                             mimso proceso.
+                      00087                         
+0021                  00088 EsperaJugador1                                  ; Espera que el jugador uno lanze el dado y el jugador d
+                            os espera su turno.
+0021   1F86           00089         btfss   Pulsador1                       ; ¿Presiono el boton el jugador uno?
+0022   2827           00090         goto    Juega1                          ; Si, Lanza el dado el jugador 1.
+0023   2821           00091         goto    EsperaJugador1          ; No, Espera a que juegue.
+0024                  00092 EsperaJugador2                                  ; Espera que el jugador dos lanze el dado y el jugador u
+                            no espera su turno.
+0024   1F87           00093         btfss   Pulsador2                       ; ¿Presiono el boton el jugador dos?
+0025   2840           00094         goto    Juega2                          ; Si, Lanza el dado el jugador 2.
+0026   2824           00095         goto    EsperaJugador2          ; No, Espera a que juegue.
+                      00096 ;
+                      00097 ; Etiqueta "Juega1 y Juega2"----------------------------------------------------------------------------
+                            ------------
+                      00098 ; - Mientras que el jugador 1 o el jugador 2 mantenga el pulsador presionado se genera un numero "Aleato
+                            rio"
+                      00099 ; en la subrutina "DadoElectronico".
+                      00100 ;
+                      00101 ; - Si el jugador gana prende el leds ganador y pone el microcontrolador en bajo consumo y si no llega a
+                             la casilla 6
+                      00102 ; sede el turno al jugador otro jugador.
+                      00103 ;
+                      00104 ; - Si un jugador llega a la casilla 6 y aun tiene que avanzar lo que hace ahora es retroceder los espac
+                            ios que le quedan
+                      00105 ;Ejemplo: Si un jugador esta en la casilla 4 y lanza el dado y sale el numero 3, el jugador queda en la 
+                            casilla 5.
+                      00106 ;
+                      00107 ;Jugador 1 comienza a jugar-----------------------------------------------------------------------------
+                            ------------
+                      00108 ;
+0027                  00109 Juega1
+0027   2065           00110         call    Dado1                           ; Genera el numero aleatorio.
+0028                  00111 MueveAdelante1
+0028   2103           00112         call    Retardo_500ms           ; Hacemos un retardo de 500ms para que se visualiza como se tras
+                            lada el jugador.
+0029   0AA1           00113         incf    Jugador1_Casillas,F     ; Incrementa en uno el numero donde estaba el jugador 1.
+002A   0821           00114         movf    Jugador1_Casillas,W     ; Mueve el dato de donde esta ubicado el jugador 1 al registro W
+                            .
+002B   205D           00115         call    TablaCasillas           ; El jugador va pasando por las casillas depende del numero que 
+                            saco el dado.
+002C   0086           00116         movwf   PORTB                           ; Muestra el leds moviendo el jugador 1.
+002D   3006           00117         movlw   Casilla_MAX                     ; Mueve el valor de la casilla máxima a W.
+002E   0221           00118         subwf   Jugador1_Casillas,W     ; Restamos para comparar si se paso de la casilla máxima.
+002F   1803           00119         btfsc   STATUS,C                        ; ¿El jugador llego a la casilla 6?
+0030   2836           00120         goto    MueveAtras1                     ; Si, Ahora decrementa en casillas.
+0031   0BA0           00121         decfsz  Contador,F                      ; Decrementa en uno al contador y salta si es cero.
+0032   2828           00122         goto    MueveAdelante1          ; Aun no es cero, sigue pasando por las casillas.
+0033                  00123 CompruebaJugador1
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0033   1A86           00124         btfsc   PORTB,RB5                       ; ¿Esta en la casilla 6?
+0034   2859           00125         goto    GanaJugador1            ; Si, Gana el jugador 1. Prende el LEDs ganador.                
+0035   2824           00126         goto    EsperaJugador2          ; Le sede el turno al jugador 2.
+0036                  00127 MueveAtras1
+0036   3005           00128         movlw   0x05
+0037   00A1           00129         movwf   Jugador1_Casillas
+0038                  00130 Mueve1
+0038   2103           00131         call    Retardo_500ms           ; Hacemos un retardo de 500ms para que se visualiza como se tras
+                            lada el jugador.
+0039   03A1           00132         decf    Jugador1_Casillas,F     ; Decremeta en uno el numero donde estaba el jugador 1.
+003A   0821           00133         movf    Jugador1_Casillas,W     ; Mueve el dato de donde esta ubicado el jugador 1 al registro W
+                            .
+003B   205D           00134         call    TablaCasillas           ; El jugador va pasando por las casillas depende del numero que 
+                            saco el dado.
+003C   0086           00135         movwf   PORTB                           ; Muestra el leds moviendo el jugador 1.
+003D   0BA0           00136         decfsz  Contador,F                      ; Decrementa en uno al contador y salta si es cero.
+003E   2838           00137         goto    Mueve1                          ; Aun no llega a cero, sigue moviendose el jugador.
+003F   2824           00138         goto    EsperaJugador2          ; Le sede el turno al jugador 2.
+                      00139 ;
+                      00140 ;Comienza a jugar el segundo jugador--------------------------------------------------------------------
+                            -------
+                      00141 ;
+0040                  00142 Juega2
+0040   206E           00143         call    Dado2                           ; Genera el numero aleatorio.
+0041                  00144 MueveAdelante2
+0041   2103           00145         call    Retardo_500ms           ; Hacemos un retardo de 500ms para que se visualiza como se tras
+                            lada el jugador.
+0042   0AA2           00146         incf    Jugador2_Casillas,F     ; Incrementa en uno el numero donde estaba el jugador 1.
+0043   0822           00147         movf    Jugador2_Casillas,W     ; Mueve el dato de donde esta ubicado el jugador 1 al registro W
+                            .
+0044   205D           00148         call    TablaCasillas           ; El jugador va pasando por las casillas depende del numero que 
+                            saco el dado.
+0045   0087           00149         movwf   PORTC                           ; Muestra el leds moviendo el jugador 1.
+0046   3006           00150         movlw   Casilla_MAX                     ; Mueve el valor de la casilla máxima a W.
+0047   0222           00151         subwf   Jugador2_Casillas,W     ; Restamos para comparar si se paso de la casilla máxima.
+0048   1803           00152         btfsc   STATUS,C                        ; ¿El jugador llego a la casilla 6?
+0049   284F           00153         goto    MueveAtras2                     ; Si, Ahora decrementa en casillas.
+004A   0BA0           00154         decfsz  Contador,F                      ; Decrementa en uno al contador y salta si es cero.
+004B   2841           00155         goto    MueveAdelante2          ; Aun no es cero, sigue pasando por las casillas.
+004C                  00156 CompruebaJugador2
+004C   1A87           00157         btfsc   PORTC,RC5                       ; ¿Esta en la casilla 6?
+004D   285B           00158         goto    GanaJugador2            ; Si, Gana el jugador 2. Prende el LEDs ganador.                
+004E   2821           00159         goto    EsperaJugador1          ; Le sede el turno al jugador 2.
+004F                  00160 MueveAtras2
+004F   3005           00161         movlw   0x05
+0050   00A2           00162         movwf   Jugador2_Casillas
+0051                  00163 Mueve2
+0051   2103           00164         call    Retardo_500ms           ; Hacemos un retardo de 500ms para que se visualiza como se tras
+                            lada el jugador.
+0052   03A2           00165         decf    Jugador2_Casillas,F     ; Decremeta en uno el numero donde estaba el jugador 1.
+0053   0822           00166         movf    Jugador2_Casillas,W     ; Mueve el dato de donde esta ubicado el jugador 1 al registro W
+                            .
+0054   205D           00167         call    TablaCasillas           ; El jugador va pasando por las casillas depende del numero que 
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                            saco el dado.
+0055   0087           00168         movwf   PORTC                           ; Muestra el leds moviendo el jugador 1.
+0056   0BA0           00169         decfsz  Contador,F                      ; Decrementa en uno al contador y salta si es cero.
+0057   2851           00170         goto    Mueve2                          ; Aun no llega a cero, sigue moviendose el jugador.
+0058   2821           00171         goto    EsperaJugador1          ; Le sede el turno al jugador 2.
+                      00172 
+0059                  00173 GanaJugador1                                    
+0059   1706           00174         bsf             F_GanaJugador1          ; Enciende la bandera que gana el jugador 1.
+005A   0063           00175         sleep                                           ; Pone al microcontrolador en bajo consumo. (Sal
+                            e de aqui con un reset)
+                      00176 
+005B                  00177 GanaJugador2                                    
+005B   1707           00178         bsf             F_GanaJugador2          ; Enciende la bandera que gana el jugador 2.
+005C   0063           00179         sleep                                           ; Pone al microcontrolador en bajo consumo. (Sal
+                            e de aqui con un reset)         
+                      00180 ;
+                      00181 ;Subrutina "TablaCasillas"---------------------------------------------------------------------------
+                      00182 ;
+                      00183 ;Esta tabla se realiza estudiando las casillas de un ludo y ver como se prende poco a poco el led
+                      00184 ;que es donde esta situado el jugador.
+                      00185 ;       
+005D                  00186 TablaCasillas   
+005D   0782           00187         addwf   PCL,F                           ; Salto indexado, salta a la configuración deseada.
+005E                  00188 Tabla0
+005E   3401 3402 3404 00189         DT 0x01,0x02,0x04,0x08,0x10,0x20,0x20 ;Configuraciones de las posiciones de las casillas.
+       3408 3410 3420 
+       3420 
+                      00190 ;
+                      00191 ;Subrutina "DadoElectronico"-----------------------------------------------------------------
+                      00192 ;
+                      00193 ;Dado1--> Jugador1 , Dado2-->Jugador2.
+                      00194 ;
+                      00195 ;Se ponen dos subrutinas o un dado para cada jugador para detectar cuando un jugador pulsa un botón
+                      00196 ;y esperar que se deje de pulsar el boton para que salga de la subrutina y para que se vea
+                      00197 ;cada jugador moviendose por las casillas.
+                      00198 ;
+0065                  00199 Dado1                                                   ;  Mientras se mantenga pulsado se quedara en es
+                            ta subrutina.
+0065   1B86           00200         btfsc   Pulsador1                       ; ¿Pulsador presionado? ¿(Pulsador1)=0?
+0066   2876           00201         goto    Fin                                     ; No, sale de la subrutina.
+0067   20D9           00202         call    Retardo_50micros        ; Hacemos un retardo de 50 microsegundos.
+0068   1B86           00203         btfsc   Pulsador1                       ; Comprueba si es un rebote.
+0069   2876           00204         goto    Fin                                     ; Era un rebote y sale fuera.
+006A   2077           00205         call    IncrementaVisualiza     ; Incrementa el contador y lo visualiza.
+006B                  00206 DejoPulsar
+006B   1F86           00207         btfss   Pulsador1                       ; ¿Dejo de pulsar? ¿(Pulsador1)=1?
+006C   2865           00208         goto    Dado1                           ; No, Sigue el generando un numero el dado.
+006D   2876           00209         goto    Fin
+                      00210 ;Subrutina para generar un dado electrocnico para el segundo jugardor------------------------------
+006E                  00211 Dado2                                                   ;  Mientras se mantenga pulsado se quedara en es
+                            ta subrutina.
+006E   1B87           00212         btfsc   Pulsador2                       ; ¿Pulsador presionado? ¿(Pulsador)=0?
+006F   2876           00213         goto    Fin                                     ; No, sale de la subrutina.
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0070   20D1           00214         call    Retardo_500micros       ; Hacemos un retardo de 50 microsegundos.
+0071   1B87           00215         btfsc   Pulsador2                       ; Comprueba si es un rebote.
+0072   2876           00216         goto    Fin                                     ; Era un rebote y sale fuera.
+0073   2077           00217         call    IncrementaVisualiza     ; Incrementa el contador y lo visualiza.
+0074                  00218 DejoPulsar2
+0074   1F87           00219         btfss   Pulsador2                       ; ¿Dejo de pulsar? ¿(Pulsador)=1?
+0075   286E           00220         goto    Dado2                           ; No, Sigue el generando un numero el dado.
+0076                  00221 Fin
+0076   0008           00222         return                                          ; Retorna de la subrutina.
+                      00223 ;
+                      00224 ;Subrutina"IncrementaVisualiza"-------------------------------------------------------------------------
+                            -----------------------
+                      00225 ;
+                      00226 ; Incrementa y visualiza en el display 7 segmentos el numero que va generando el dado.
+                      00227 ;
+0077                  00228 IncrementaVisualiza                             ; Subrutina para incrementar y visualizar en el display.
+0077   0AA0           00229         incf    Contador,F                      ; Incrementa el contador en uno.
+0078   3007           00230         movlw   d'7'                            ; Movemos el dato literal para restar con el contador.
+0079   0220           00231         subwf   Contador,W                      ; Operación artimetica, W=Contador-W
+007A   1C03           00232         btfss   STATUS,C                        ; ¿(Contador)<7?
+007B   287E           00233         goto    Visualiza                       ; Contador<7 visualiza normal
+007C                  00234 InicializaContador                              ; Subrutina para incializar el contador, Dejarlo en cero
+                            .
+007C   3001           00235         movlw   0x01                            ; Mueve el valor 1 al contador.
+007D   00A0           00236         movwf   Contador                        ; No, Era igual o Mayor. Por tanto,resetea.             
+007E                  00237 Visualiza                                               ; Subrutina para Visualizar el contador en el Di
+                            splay.
+007E   0820           00238         movf Contador,W                         ; Mueve el valor del contador al registro W.
+007F   2083           00239         call Numero_a_7Segmentos        ; Pasa el numero a 7Segmentos para poder verlo.
+0080   0088           00240         movwf Display                           ; Mueve el dato al Display para poder visualizar.
+0081   3001           00241         movlw   0x01                            
+0082   0008           00242         return                                          ; Retornamos de la subrutina.
+                      00243 ;Fin de la subrutina ----------------------------------------------------------------------------
+                      00244 
+                      00245         INCLUDE <DISPLAY_7S.INC>        ; Incluimos la libreria del Display 7Segmentos.
+                      00001 ;**************************** Librería "DISPLAY_7S.INC **********************************
+                      00002 ;
+                      00003 ;       ===================================================================
+                      00004 ;         Del libro "MICROCONTROLADOR PIC16F84. DESARROLLO DE PROYECTOS"
+                      00005 ;         E. Palacios, F. Remiro y L. López.            wwww.pic16f84a.com
+                      00006 ;         Editorial Ra-Ma.  www.ra-ma.es
+                      00007 ;       ===================================================================
+                      00008 ;
+                      00009 ; Subrutinas para convertir un código ASCII en su valor equivalente en 7 segmentos y así
+                      00010 ; poder activar displays.
+                      00011 ;
+                      00012 ; Si el código ASCII es menor que el signo más '+' o mayor  que la letra zeta 'Z' obtiene
+                      00013 ; el código erróneo b'10000000' para encender sólo el punto decimal del display.
+                      00014 ;
+                      00015 ; Si se trata de un número hay que ejecutar la subrutina "Numero_a_7Segmentos" que convierte
+                      00016 ; un numero (de 0 a 9) en su equivalente en código de 7 segmentos.
+                      00017 ;
+                      00018 ; Entrada: En registro W, el dato en código ASCII a convertir.
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00019 ; Salida : En registro W, el código 7 segmentos.
+                      00020 
+                      00021         CBLOCK
+  00000024            00022         Display7s_Dato                          ; Aquí se reservará el valor del dato de entrada.
+                      00023         ENDC
+                      00024         
+0083                  00025 Numero_a_7Segmentos
+0083   390F           00026         andlw   b'00001111'                     ; Se queda con el nibble bajo.
+0084   3E30           00027         addlw   '0'                                     ; Se pasa a ASCII sumándole el valor ASCII
+                      00028                                                                 ; del "0" y ejecuta "ASCII_7_Segmentos".
+0085                  00029 ASCII_a_7Segmentos
+0085   00A4           00030         movwf   Display7s_Dato          ; Guarda el valor del carácter.
+0086   3C20           00031         sublw   ' '                             ; Comprueba si es " " (espacio).
+0087   1903           00032         btfsc   STATUS,Z                        ; ¿Es distinta de " " (espacio)?, ¿Z=0?
+0088   3400           00033         retlw   00h                                     ; Es " ". Devuelve el código 7-Segmentos del " "
+                            .
+0089   0824           00034         movf    Display7s_Dato,W        ; Recupera el valor del dato de entrada.
+008A   3CD1           00035         sublw   'Ñ'                             ; Comprueba si es "Ñ".
+008B   1903           00036         btfsc   STATUS,Z                        ; ¿Es distinta de "Ñ"?, ¿Z=0?
+008C   3455           00037         retlw   55h                                     ; Es "Ñ". Devuelve el código 7-Segmentos de "Ñ".
+008D   0824           00038         movf    Display7s_Dato,W        ; Recupera el valor del dato de entrada.
+008E   3CBA           00039         sublw   'º'                             ; Comprueba si es "º".
+008F   1903           00040         btfsc   STATUS,Z                        ; ¿Es distinta de "º"?, ¿Z=0?
+0090   3463           00041         retlw   63h                                     ; Es "º". Devuelve el código 7-Segmentos de "º".
+                      00042 ;
+0091   0824           00043         movf    Display7s_Dato,W        ; Comprueba si el código ASCII es mayor que la "Z".
+0092   3C5A           00044         sublw   'Z'                                     ; (W)='Z'-(Display7s_Dato)
+0093   1C03           00045         btfss   STATUS,C                        ; ¿C=1?, ¿(W) positivo?, ¿'Z'>=(Display7s_Dato)?
+0094   3480           00046         retlw   b'10000000'                     ; Si el código ASCII es mayor que 'Z' es un error.
+0095   302B           00047         movlw   '+'                             ; Averigua en qué orden está el carácter leído
+0096   0224           00048         subwf   Display7s_Dato,W        ; dentro de la tabla de conversión, respecto del
+0097   1C03           00049         btfss   STATUS,C                        ; primero que es '+'.
+0098   3480           00050         retlw   b'10000000'                     ; Si el código ASCII es menor que '+' es un error.
+                      00051 ;
+0099   0782           00052         addwf   PCL,F                           ; Obtiene el código 7 segmentos.
+009A                  00053 InicioTablaASCII
+009A   3446 3404 3440 00054         DT      46h, 04h, 40h, 80h, 00h, 3Fh, 06h, 5Bh, 4Fh, 66h, 6Dh                   ; Signos y
+       3480 3400 343F 
+       3406 345B 344F 
+       3466 346D 
+00A5   347D 3407 347F 00055         DT      7Dh, 07h, 7Fh, 67h, 41h, 88h, 00h, 48h, 00h, 00h, 00h                   ; números.
+       3467 3441 3488 
+       3400 3448 3400 
+       3400 3400 
+00B0   3477 347C 3439 00056         DT      77h, 7Ch, 39h, 5Eh, 79h, 71h, 6Fh, 76h, 19h, 1Eh, 7Ah, 38h, 37h ; Letras.
+       345E 3479 3471 
+       346F 3476 3419 
+       341E 347A 3438 
+       3437 
+00BD   3454 343F 3473 00057         DT      54h, 3Fh, 73h, 67h, 50h, 6Dh, 78h, 1Ch, 3Eh, 1Dh, 70h, 6Eh, 49h
+       3467 3450 346D 
+       3478 341C 343E 
+       341D 3470 346E 
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+       3449 
+00CA                  00058 FinTablaASCII
+                      00059 ;
+                      00060 ; Esta es la tabla para la visualización en display de siete segmentos (Ver figura 11-3).
+                      00061 
+                      00062         IF (FinTablaASCII > 0xFF)
+                      00063                 ERROR   "¡CUIDADO!: La tabla ha superado el tamaño de la página de los"
+                      00064                 MESSG   "primeros 256 bytes de memoria ROM. NO funcionará correctamente."
+                      00065         ENDIF
+                      00066 
+                      00067 ;       ===================================================================
+                      00068 ;         Del libro "MICROCONTROLADOR PIC16F84. DESARROLLO DE PROYECTOS"
+                      00069 ;         E. Palacios, F. Remiro y L. López.            www.pic16f84a.com
+                      00070 ;         Editorial Ra-Ma.  www.ra-ma.es
+                      00071 ;       ===================================================================
+                      00246         INCLUDE <RETARDOS.INC>          ; Incluyendo la libreria para hacer retardos.
+                      00001 ;**************************** Librería "RETARDOS.INC" *********************************
+                      00002 ;
+                      00003 ;       ===================================================================
+                      00004 ;         Del libro "MICROCONTROLADOR PIC16F84. DESARROLLO DE PROYECTOS"
+                      00005 ;         E. Palacios, F. Remiro y L. López.
+                      00006 ;         Editorial Ra-Ma.  www.ra-ma.es
+                      00007 ;       ===================================================================
+                      00008 ;
+                      00009 ; Librería con múltiples subrutinas de retardos, desde 4 microsegundos hasta 20 segundos. 
+                      00010 ; Además se pueden implementar otras subrutinas muy fácilmente.
+                      00011 ;
+                      00012 ; Se han calculado para un sistema microcontrolador con un PIC trabajando con un cristal
+                      00013 ; de cuarzo a 4 MHz. Como cada ciclo máquina son 4 ciclos de reloj, resulta que cada
+                      00014 ; ciclo máquina tarda 4 x 1/4MHz = 1 µs.
+                      00015 ;
+                      00016 ; En los comentarios, "cm" significa "ciclos máquina".
+                      00017 ;
+                      00018 ; ZONA DE DATOS *********************************************************************
+                      00019 
+                      00020         CBLOCK
+  00000025            00021         R_ContA                         ; Contadores para los retardos.
+  00000026            00022         R_ContB
+  00000027            00023         R_ContC
+                      00024         ENDC
+                      00025 ;
+                      00026 ; RETARDOS de 4 hasta 10 microsegundos ---------------------------------------------------
+                      00027 ;
+                      00028 ; A continuación retardos pequeños teniendo en cuenta que para una frecuencia de 4 MHZ,
+                      00029 ; la llamada a subrutina "call" tarda 2 ciclos máquina, el retorno de subrutina
+                      00030 ; "return" toma otros 2 ciclos máquina y cada instrucción "nop" tarda 1 ciclo máquina.
+                      00031 ;
+00CA                  00032 Retardo_10micros                                ; La llamada "call" aporta 2 ciclos máquina.
+00CA   0000           00033         nop                             ; Aporta 1 ciclo máquina.
+00CB   0000           00034         nop                             ; Aporta 1 ciclo máquina.
+00CC   0000           00035         nop                             ; Aporta 1 ciclo máquina.
+00CD   0000           00036         nop                             ; Aporta 1 ciclo máquina.
+00CE   0000           00037         nop                             ; Aporta 1 ciclo máquina.
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00CF                  00038 Retardo_5micros                         ; La llamada "call" aporta 2 ciclos máquina.
+00CF   0000           00039         nop                             ; Aporta 1 ciclo máquina.
+00D0                  00040 Retardo_4micros                         ; La llamada "call" aporta 2 ciclos máquina.
+00D0   0008           00041         return                          ; El salto del retorno aporta 2 ciclos máquina.
+                      00042 ;
+                      00043 ; RETARDOS de 20 hasta 500 microsegundos ------------------------------------------------
+                      00044 ;
+00D1                  00045 Retardo_500micros                               ; La llamada "call" aporta 2 ciclos máquina.
+00D1   0000           00046         nop                             ; Aporta 1 ciclo máquina.
+00D2   30A4           00047         movlw   d'164'                  ; Aporta 1 ciclo máquina. Este es el valor de "K".
+00D3   28DD           00048         goto    RetardoMicros           ; Aporta 2 ciclos máquina.
+00D4                  00049 Retardo_200micros                               ; La llamada "call" aporta 2 ciclos máquina.
+00D4   0000           00050         nop                             ; Aporta 1 ciclo máquina.
+00D5   3040           00051         movlw   d'64'                   ; Aporta 1 ciclo máquina. Este es el valor de "K".
+00D6   28DD           00052         goto    RetardoMicros           ; Aporta 2 ciclos máquina.
+00D7                  00053 Retardo_100micros                               ; La llamada "call" aporta 2 ciclos máquina.
+00D7   301F           00054         movlw   d'31'                   ; Aporta 1 ciclo máquina. Este es el valor de "K".
+00D8   28DD           00055         goto    RetardoMicros           ; Aporta 2 ciclos máquina.
+00D9                  00056 Retardo_50micros                                ; La llamada "call" aporta 2 ciclos máquina.
+00D9   0000           00057         nop                             ; Aporta 1 ciclo máquina.
+00DA   300E           00058         movlw   d'14'                   ; Aporta 1 ciclo máquina. Este es el valor de "K".
+00DB   28DD           00059         goto    RetardoMicros           ; Aporta 2 ciclos máquina.
+00DC                  00060 Retardo_20micros                                ; La llamada "call" aporta 2 ciclos máquina.
+00DC   3005           00061         movlw   d'5'                    ; Aporta 1 ciclo máquina. Este es el valor de "K".
+                      00062 ;
+                      00063 ; El próximo bloque "RetardoMicros" tarda:
+                      00064 ; 1 + (K-1) + 2 + (K-1)x2 + 2 = (2 + 3K) ciclos máquina.
+                      00065 ;
+00DD                  00066 RetardoMicros
+00DD   00A5           00067         movwf   R_ContA                 ; Aporta 1 ciclo máquina.
+00DE                  00068 Rmicros_Bucle
+00DE   0BA5           00069         decfsz  R_ContA,F               ; (K-1)x1 cm (cuando no salta) + 2 cm (al saltar).
+00DF   28DE           00070         goto    Rmicros_Bucle           ; Aporta (K-1)x2 ciclos máquina.
+00E0   0008           00071         return                          ; El salto del retorno aporta 2 ciclos máquina.
+                      00072 ;
+                      00073 ;En total estas subrutinas tardan:
+                      00074 ; - Retardo_500micros:  2 + 1 + 1 + 2 + (2 + 3K) = 500 cm = 500 µs. (para K=164 y 4 MHz).
+                      00075 ; - Retardo_200micros:  2 + 1 + 1 + 2 + (2 + 3K) = 200 cm = 200 µs. (para K= 64 y 4 MHz).
+                      00076 ; - Retardo_100micros:  2     + 1 + 2 + (2 + 3K) = 100 cm = 100 µs. (para K= 31 y 4 MHz).
+                      00077 ; - Retardo_50micros :  2 + 1 + 1 + 2 + (2 + 3K) =  50 cm =  50 µs. (para K= 14 y 4 MHz).
+                      00078 ; - Retardo_20micros :  2     + 1     + (2 + 3K) =  20 cm =  20 µs. (para K=  5 y 4 MHz).
+                      00079 ;
+                      00080 ; RETARDOS de 1 ms hasta 200 ms. --------------------------------------------------------
+                      00081 ;
+00E1                  00082 Retardo_200ms                           ; La llamada "call" aporta 2 ciclos máquina.
+00E1   30C8           00083         movlw   d'200'                  ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00E2   28F0           00084         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+00E3                  00085 Retardo_100ms                           ; La llamada "call" aporta 2 ciclos máquina.
+00E3   3064           00086         movlw   d'100'                  ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00E4   28F0           00087         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+00E5                  00088 Retardo_50ms                            ; La llamada "call" aporta 2 ciclos máquina.
+00E5   3032           00089         movlw   d'50'                   ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00E6   28F0           00090         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E7                  00091 Retardo_20ms                            ; La llamada "call" aporta 2 ciclos máquina.
+00E7   3014           00092         movlw   d'20'                   ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00E8   28F0           00093         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+00E9                  00094 Retardo_10ms                            ; La llamada "call" aporta 2 ciclos máquina.
+00E9   300A           00095         movlw   d'10'                   ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00EA   28F0           00096         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+00EB                  00097 Retardo_5ms                             ; La llamada "call" aporta 2 ciclos máquina.
+00EB   3005           00098         movlw   d'5'                    ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00EC   28F0           00099         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+00ED                  00100 Retardo_2ms                             ; La llamada "call" aporta 2 ciclos máquina.
+00ED   3002           00101         movlw   d'2'                    ; Aporta 1 ciclo máquina. Este es el valor de "M".
+00EE   28F0           00102         goto    Retardos_ms             ; Aporta 2 ciclos máquina.
+00EF                  00103 Retardo_1ms                             ; La llamada "call" aporta 2 ciclos máquina.
+00EF   3001           00104         movlw   d'1'                    ; Aporta 1 ciclo máquina. Este es el valor de "M".
+                      00105 ;
+                      00106 ; El próximo bloque "Retardos_ms" tarda:
+                      00107 ; 1 + M + M + KxM + (K-1)xM + Mx2 + (K-1)Mx2 + (M-1) + 2 + (M-1)x2 + 2 =
+                      00108 ; = (2 + 4M + 4KM) ciclos máquina. Para K=249 y M=1 supone 1002 ciclos máquina
+                      00109 ; que a 4 MHz son 1002 µs = 1 ms.
+                      00110 ;
+00F0                  00111 Retardos_ms
+00F0   00A6           00112         movwf   R_ContB                 ; Aporta 1 ciclo máquina.
+00F1                  00113 R1ms_BucleExterno
+00F1   30F9           00114         movlw   d'249'                  ; Aporta Mx1 ciclos máquina. Este es el valor de "K".
+00F2   00A5           00115         movwf   R_ContA                 ; Aporta Mx1 ciclos máquina.
+00F3                  00116 R1ms_BucleInterno
+00F3   0000           00117         nop                             ; Aporta KxMx1 ciclos máquina.
+00F4   0BA5           00118         decfsz  R_ContA,F               ; (K-1)xMx1 cm (cuando no salta) + Mx2 cm (al saltar).
+00F5   28F3           00119         goto    R1ms_BucleInterno               ; Aporta (K-1)xMx2 ciclos máquina.
+00F6   0BA6           00120         decfsz  R_ContB,F               ; (M-1)x1 cm (cuando no salta) + 2 cm (al saltar).
+00F7   28F1           00121         goto    R1ms_BucleExterno       ; Aporta (M-1)x2 ciclos máquina.
+00F8   0008           00122         return                          ; El salto del retorno aporta 2 ciclos máquina.
+                      00123 ;
+                      00124 ;En total estas subrutinas tardan:
+                      00125 ; - Retardo_200ms:      2 + 1 + 2 + (2 + 4M + 4KM) = 200007 cm = 200 ms. (M=200 y K=249).
+                      00126 ; - Retardo_100ms:      2 + 1 + 2 + (2 + 4M + 4KM) = 100007 cm = 100 ms. (M=100 y K=249).
+                      00127 ; - Retardo_50ms :      2 + 1 + 2 + (2 + 4M + 4KM) =  50007 cm =  50 ms. (M= 50 y K=249).
+                      00128 ; - Retardo_20ms :      2 + 1 + 2 + (2 + 4M + 4KM) =  20007 cm =  20 ms. (M= 20 y K=249).
+                      00129 ; - Retardo_10ms :      2 + 1 + 2 + (2 + 4M + 4KM) =  10007 cm =  10 ms. (M= 10 y K=249).
+                      00130 ; - Retardo_5ms  :      2 + 1 + 2 + (2 + 4M + 4KM) =   5007 cm =   5 ms. (M=  5 y K=249).
+                      00131 ; - Retardo_2ms  :      2 + 1 + 2 + (2 + 4M + 4KM) =   2007 cm =   2 ms. (M=  2 y K=249).
+                      00132 ; - Retardo_1ms  :      2 + 1     + (2 + 4M + 4KM) =   1005 cm =   1 ms. (M=  1 y K=249).
+                      00133 ;
+                      00134 ; RETARDOS de 0.5 hasta 20 segundos ---------------------------------------------------
+                      00135 ;
+00F9                  00136 Retardo_20s                             ; La llamada "call" aporta 2 ciclos máquina.
+00F9   30C8           00137         movlw   d'200'                  ; Aporta 1 ciclo máquina. Este es el valor de "N".
+00FA   2904           00138         goto    Retardo_1Decima         ; Aporta 2 ciclos máquina.
+00FB                  00139 Retardo_10s                             ; La llamada "call" aporta 2 ciclos máquina.
+00FB   3064           00140         movlw   d'100'                  ; Aporta 1 ciclo máquina. Este es el valor de "N".
+00FC   2904           00141         goto    Retardo_1Decima         ; Aporta 2 ciclos máquina.
+00FD                  00142 Retardo_5s                              ; La llamada "call" aporta 2 ciclos máquina.
+00FD   3032           00143         movlw   d'50'                   ; Aporta 1 ciclo máquina. Este es el valor de "N".
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00FE   2904           00144         goto    Retardo_1Decima         ; Aporta 2 ciclos máquina.
+00FF                  00145 Retardo_2s                              ; La llamada "call" aporta 2 ciclos máquina.
+00FF   3014           00146         movlw   d'20'                   ; Aporta 1 ciclo máquina. Este es el valor de "N".
+0100   2904           00147         goto    Retardo_1Decima         ; Aporta 2 ciclos máquina.
+0101                  00148 Retardo_1s                              ; La llamada "call" aporta 2 ciclos máquina.
+0101   300A           00149         movlw   d'10'                   ; Aporta 1 ciclo máquina. Este es el valor de "N".
+0102   2904           00150         goto    Retardo_1Decima         ; Aporta 2 ciclos máquina.
+0103                  00151 Retardo_500ms                           ; La llamada "call" aporta 2 ciclos máquina.
+0103   3005           00152         movlw   d'5'                    ; Aporta 1 ciclo máquina. Este es el valor de "N".
+                      00153 ;
+                      00154 ; El próximo bloque "Retardo_1Decima" tarda:
+                      00155 ; 1 + N + N + MxN + MxN + KxMxN + (K-1)xMxN + MxNx2 + (K-1)xMxNx2 +
+                      00156 ;   + (M-1)xN + Nx2 + (M-1)xNx2 + (N-1) + 2 + (N-1)x2 + 2 =
+                      00157 ; = (2 + 4M + 4MN + 4KM) ciclos máquina. Para K=249, M=100 y N=1 supone 100011
+                      00158 ; ciclos máquina que a 4 MHz son 100011 µs = 100 ms = 0,1 s = 1 décima de segundo.
+                      00159 ;
+0104                  00160 Retardo_1Decima
+0104   00A7           00161         movwf   R_ContC                 ; Aporta 1 ciclo máquina.
+0105                  00162 R1Decima_BucleExterno2
+0105   3064           00163         movlw   d'100'                  ; Aporta Nx1 ciclos máquina. Este es el valor de "M".
+0106   00A6           00164         movwf   R_ContB                 ; Aporta Nx1 ciclos máquina.
+0107                  00165 R1Decima_BucleExterno
+0107   30F9           00166         movlw   d'249'                  ; Aporta MxNx1 ciclos máquina. Este es el valor de "K".
+0108   00A5           00167         movwf   R_ContA                 ; Aporta MxNx1 ciclos máquina.
+0109                  00168 R1Decima_BucleInterno          
+0109   0000           00169         nop                             ; Aporta KxMxNx1 ciclos máquina.
+010A   0BA5           00170         decfsz  R_ContA,F               ; (K-1)xMxNx1 cm (si no salta) + MxNx2 cm (al saltar).
+010B   2909           00171         goto    R1Decima_BucleInterno   ; Aporta (K-1)xMxNx2 ciclos máquina.
+010C   0BA6           00172         decfsz  R_ContB,F               ; (M-1)xNx1 cm (cuando no salta) + Nx2 cm (al saltar).
+010D   2907           00173         goto    R1Decima_BucleExterno   ; Aporta (M-1)xNx2 ciclos máquina.
+010E   0BA7           00174         decfsz  R_ContC,F               ; (N-1)x1 cm (cuando no salta) + 2 cm (al saltar).
+010F   2905           00175         goto    R1Decima_BucleExterno2  ; Aporta (N-1)x2 ciclos máquina.
+0110   0008           00176         return                          ; El salto del retorno aporta 2 ciclos máquina.
+                      00177 ;
+                      00178 ;En total estas subrutinas tardan:
+                      00179 ; - Retardo_20s:        2 + 1 + 2 + (2 + 4N + 4MN + 4KMN) = 20000807 cm = 20 s.
+                      00180 ;                       (N=200, M=100 y K=249).
+                      00181 ; - Retardo_10s:        2 + 1 + 2 + (2 + 4N + 4MN + 4KMN) = 10000407 cm = 10 s.
+                      00182 ;                       (N=100, M=100 y K=249).
+                      00183 ; - Retardo_5s:         2 + 1 + 2 + (2 + 4N + 4MN + 4KMN) =  5000207 cm =  5 s.
+                      00184 ;                       (N= 50, M=100 y K=249).
+                      00185 ; - Retardo_2s:         2 + 1 + 2 + (2 + 4N + 4MN + 4KMN) =  2000087 cm =  2 s.
+                      00186 ;                       (N= 20, M=100 y K=249).
+                      00187 ; - Retardo_1s:         2 + 1 + 2 + (2 + 4N + 4MN + 4KMN) =  1000047 cm =  1 s.
+                      00188 ;                       (N= 10, M=100 y K=249).
+                      00189 ; - Retardo_500ms:      2 + 1     + (2 + 4N + 4MN + 4KMN) =   500025 cm = 0,5 s.
+                      00190 ;                       (N=  5, M=100 y K=249).
+                      00191 
+                      00192 ;       ===================================================================
+                      00193 ;         Del libro "MICROCONTROLADOR PIC16F84. DESARROLLO DE PROYECTOS"
+                      00194 ;         E. Palacios, F. Remiro y L. López.
+                      00195 ;         Editorial Ra-Ma.  www.ra-ma.es
+                      00196 ;       ===================================================================
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00197 
+                      00247         END                                                     ; Fin del programa.
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ASCII_a_7Segmentos                00000085
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CIS                               00000003
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CKE                               00000006
+CKP                               00000004
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000009C
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+Casilla_MAX                       00000006
+CompruebaJugador1                 00000033
+CompruebaJugador2                 0000004C
+Contador                          00000020
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+D_NOT_A                           00000005
+Dado1                             00000065
+Dado2                             0000006E
+DejoPulsar                        0000006B
+DejoPulsar2                       00000074
+Determina_Turno                   00000011
+Display                           PORTD
+Display7s_Dato                    00000024
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+EsperaJugador1                    00000021
+EsperaJugador2                    00000024
+Espera_LanzaTurno1                00000012
+Espera_LanzaTurno2                00000017
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+F_GanaJugador1                    PORTB,RB6
+F_GanaJugador2                    PORTC,RC6
+Fin                               00000076
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FinTablaASCII                     000000CA
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+GanaJugador1                      00000059
+GanaJugador2                      0000005B
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+IncrementaVisualiza               00000077
+InicializaContador                0000007C
+Inicio                            00000000
+InicioTablaASCII                  0000009A
+Juega1                            00000027
+Juega2                            00000040
+Jugador1_Casillas                 00000021
+Jugador2_Casillas                 00000022
+Mueve1                            00000038
+Mueve2                            00000051
+MueveAdelante1                    00000028
+MueveAdelante2                    00000041
+MueveAtras1                       00000036
+MueveAtras2                       0000004F
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+Numero_Turno                      00000023
+Numero_a_7Segmentos               00000083
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+Principal                         0000000B
+Pulsador1                         PORTB,RB7
+Pulsador2                         PORTC,RC7
+R                                 00000002
+R1Decima_BucleExterno             00000107
+R1Decima_BucleExterno2            00000105
+R1Decima_BucleInterno             00000109
+R1ms_BucleExterno                 000000F1
+R1ms_BucleInterno                 000000F3
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_ContA                           00000025
+R_ContB                           00000026
+R_ContC                           00000027
+R_NOT_W                           00000002
+R_W                               00000002
+RetardoMicros                     000000DD
+Retardo_100micros                 000000D7
+Retardo_100ms                     000000E3
+Retardo_10micros                  000000CA
+Retardo_10ms                      000000E9
+Retardo_10s                       000000FB
+Retardo_1Decima                   00000104
+Retardo_1ms                       000000EF
+Retardo_1s                        00000101
+Retardo_200micros                 000000D4
+Retardo_200ms                     000000E1
+Retardo_20micros                  000000DC
+Retardo_20ms                      000000E7
+Retardo_20s                       000000F9
+Retardo_2ms                       000000ED
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Retardo_2s                        000000FF
+Retardo_4micros                   000000D0
+Retardo_500micros                 000000D1
+Retardo_500ms                     00000103
+Retardo_50micros                  000000D9
+Retardo_50ms                      000000E5
+Retardo_5micros                   000000CF
+Retardo_5ms                       000000EB
+Retardo_5s                        000000FD
+Retardos_ms                       000000F0
+Rmicros_Bucle                     000000DE
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 20
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+Tabla0                            0000005E
+TablaCasillas                     0000005D
+UA                                00000001
+Visualiza                         0000007E
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+MPASM  5.51                 LLEDADADELUDO.ASM   5-5-2021  18:19:04         PAGE 21
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX X--------------- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   273
+Program Memory Words Free:  7919
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

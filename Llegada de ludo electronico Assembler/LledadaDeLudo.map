@@ -1,0 +1,160 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Wed May 05 18:19:07 2021
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000222
+.config_2007_LLEDADADELUDO.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000110      
+                            0x002007    0x002007      
+            274 out of 8454 program addresses used, program memory utilization is 3%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+       ASCII_a_7Segmentos   0x000085    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+        CompruebaJugador1   0x000033    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+        CompruebaJugador2   0x00004c    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                    Dado1   0x000065    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                    Dado2   0x00006e    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+               DejoPulsar   0x00006b    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+              DejoPulsar2   0x000074    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+          Determina_Turno   0x000011    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           EsperaJugador1   0x000021    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           EsperaJugador2   0x000024    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+       Espera_LanzaTurno1   0x000012    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+       Espera_LanzaTurno2   0x000017    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                      Fin   0x000076    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+            FinTablaASCII   0x0000ca    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+             GanaJugador1   0x000059    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+             GanaJugador2   0x00005b    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+      IncrementaVisualiza   0x000077    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+       InicializaContador   0x00007c    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Inicio   0x000000    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+         InicioTablaASCII   0x00009a    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+                   Juega1   0x000027    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Juega2   0x000040    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Mueve1   0x000038    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Mueve2   0x000051    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           MueveAdelante1   0x000028    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           MueveAdelante2   0x000041    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+              MueveAtras1   0x000036    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+              MueveAtras2   0x00004f    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+      Numero_a_7Segmentos   0x000083    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+                Principal   0x00000b    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+    R1Decima_BucleExterno   0x000107    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+   R1Decima_BucleExterno2   0x000105    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+    R1Decima_BucleInterno   0x000109    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        R1ms_BucleExterno   0x0000f1    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        R1ms_BucleInterno   0x0000f3    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            RetardoMicros   0x0000dd    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        Retardo_100micros   0x0000d7    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Retardo_100ms   0x0000e3    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+         Retardo_10micros   0x0000ca    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+             Retardo_10ms   0x0000e9    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_10s   0x0000fb    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+          Retardo_1Decima   0x000104    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_1ms   0x0000ef    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+               Retardo_1s   0x000101    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        Retardo_200micros   0x0000d4    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Retardo_200ms   0x0000e1    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+         Retardo_20micros   0x0000dc    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+             Retardo_20ms   0x0000e7    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_20s   0x0000f9    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_2ms   0x0000ed    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+               Retardo_2s   0x0000ff    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+          Retardo_4micros   0x0000d0    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        Retardo_500micros   0x0000d1    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Retardo_500ms   0x000103    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+         Retardo_50micros   0x0000d9    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+             Retardo_50ms   0x0000e5    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+          Retardo_5micros   0x0000cf    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_5ms   0x0000eb    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+               Retardo_5s   0x0000fd    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardos_ms   0x0000f0    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Rmicros_Bucle   0x0000de    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+                   Tabla0   0x00005e    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+            TablaCasillas   0x00005d    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                Visualiza   0x00007e    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                   Inicio   0x000000    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                Principal   0x00000b    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+          Determina_Turno   0x000011    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+       Espera_LanzaTurno1   0x000012    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+       Espera_LanzaTurno2   0x000017    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           EsperaJugador1   0x000021    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           EsperaJugador2   0x000024    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Juega1   0x000027    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           MueveAdelante1   0x000028    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+        CompruebaJugador1   0x000033    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+              MueveAtras1   0x000036    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Mueve1   0x000038    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Juega2   0x000040    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+           MueveAdelante2   0x000041    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+        CompruebaJugador2   0x00004c    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+              MueveAtras2   0x00004f    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Mueve2   0x000051    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+             GanaJugador1   0x000059    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+             GanaJugador2   0x00005b    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+            TablaCasillas   0x00005d    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                   Tabla0   0x00005e    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                    Dado1   0x000065    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+               DejoPulsar   0x00006b    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                    Dado2   0x00006e    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+              DejoPulsar2   0x000074    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                      Fin   0x000076    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+      IncrementaVisualiza   0x000077    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+       InicializaContador   0x00007c    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+                Visualiza   0x00007e    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\LledadaDeLudo.asm
+      Numero_a_7Segmentos   0x000083    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+       ASCII_a_7Segmentos   0x000085    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+         InicioTablaASCII   0x00009a    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+         Retardo_10micros   0x0000ca    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            FinTablaASCII   0x0000ca    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\DISPLAY_7S.INC
+          Retardo_5micros   0x0000cf    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+          Retardo_4micros   0x0000d0    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        Retardo_500micros   0x0000d1    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        Retardo_200micros   0x0000d4    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        Retardo_100micros   0x0000d7    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+         Retardo_50micros   0x0000d9    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+         Retardo_20micros   0x0000dc    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            RetardoMicros   0x0000dd    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Rmicros_Bucle   0x0000de    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Retardo_200ms   0x0000e1    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Retardo_100ms   0x0000e3    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+             Retardo_50ms   0x0000e5    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+             Retardo_20ms   0x0000e7    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+             Retardo_10ms   0x0000e9    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_5ms   0x0000eb    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_2ms   0x0000ed    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_1ms   0x0000ef    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardos_ms   0x0000f0    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        R1ms_BucleExterno   0x0000f1    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+        R1ms_BucleInterno   0x0000f3    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_20s   0x0000f9    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+              Retardo_10s   0x0000fb    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+               Retardo_5s   0x0000fd    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+               Retardo_2s   0x0000ff    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+               Retardo_1s   0x000101    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+            Retardo_500ms   0x000103    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+          Retardo_1Decima   0x000104    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+   R1Decima_BucleExterno2   0x000105    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+    R1Decima_BucleExterno   0x000107    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+    R1Decima_BucleInterno   0x000109    program     static C:\Users\victo\Desktop\Universidad\Semestre Especial 8 semanas 2021 I\Sistemas Digitales II\Proyecto (Llegada de Ludo)\RETARDOS.INC
+
+
